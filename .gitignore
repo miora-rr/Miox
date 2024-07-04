@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment configuration
+.env
+
+# Downloads directory
+downloads/
+
+# Ignore log files (uncomment this if you have log files)
+#*.log
+
+# Package lock file
+package-lock.json

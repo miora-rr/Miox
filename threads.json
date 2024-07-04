@@ -1,0 +1,37 @@
+{
+    "threads": [
+      {
+        "name": "Bénévoles",
+        "message": "Coucou! A-t-on besoin de bénévole pour cet événement"
+      },
+      {
+        "name": "Budget",
+        "message": "Salut ! Quels sont les montants pour cet événement? 💸"
+      },
+      {
+        "name": "Communications",
+        "message": "Salut ! Voici une checklist 🗒️ pour cet événement:\n - Avez-vous besoin de faire des affiches? Si oui, combien?\n Voici le lien vers la Reprographie : https://www.polymtl.ca/reprographie/formulaires/impression/ \n - Quelles sont les plateformes visées (Événement Facebook? Post Instagram ? Stories à quelle récurrence?)"
+      },
+      {
+        "name": "Facture",
+        "message": "Téléversez vos factures ici"
+      },
+      {
+        "name": "Matériel et salle",
+        "message": "Salut  !\n S'il faut réserver une salle de classe: https://intranet.polymtl.ca/gev/ \n\n Voici la liste de matériel disponible au SDI à inclure dans le Plan de salle:\n- Babillards mobiles\n- Chaises noires pliantes\n- Chaises rouges\n- Nappes rectangulaires\n- Nappes tables cocktail\n- Portemanteaux 25 cintres ch.\n- Poteaux de foule\n- Tables cocktail 24\" x 42\" 30\n- Tables cocktail — Galerie Rolland 24\" x 42\" 10\n- Tables rectangulaires 30’’ x 72’’ x 29’’ 120\n- Totems — signalisation\n- Vestiaire Galerie Rolland \n\n Autres:\n - Bac à glace - Décoration"
+        },
+      {
+        "name": "Photos",
+        "message": "Téléversez vos photos ici après l'événement 📷"
+      },
+      {
+        "name": "Comités à l'interne",
+        "message": "Coucou ! Quels sont les comités à contacter"
+      },
+      {
+        "name": "Partenaires externe",
+        "message": "Coucou ! Quels sont les partenaires pour cet événement?"
+      }
+    ]
+  }
+  
