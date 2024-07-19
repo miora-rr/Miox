@@ -1,4 +1,3 @@
 require('dotenv').config();
-const DiscordController = require('./controller/DiscordController')
 
-new DiscordController();
+new (require('./controller/DiscordController'))();

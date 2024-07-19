@@ -1,13 +1,15 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const PDFDocument = require('pdfkit');
 const GoogleDriveService = require('./GoogleDriveService');
+const DiscordMessagesService = require('./DiscordMessagesService');
+const { threadId } = require('worker_threads');
 
 class DiscordService {
     constructor() {
         this.googleDriveService = new GoogleDriveService();
+        this.messageService = new DiscordMessagesService();
     }
     
     async askEventDetails(interaction) {
@@ -57,6 +59,23 @@ class DiscordService {
         }
     }
     
+    async createGoogleDriveFolder(folderName, destinationFolderId, channel) {
+        try {
+            const newFolderId = await this.googleDriveService.createFolder(folderName, destinationFolderId);
+
+            if (destinationFolderId === process.env.EVENT_FOLDER_ID) await this.googleDriveService.copyFiles(process.env.TEMPLATE_FOLDER_ID, newFolderId);
+            
+            const message = this.messageService.printNewFolderCreated(newFolderId, destinationFolderId);
+
+            if (channel) channel.send(message);
+            
+            console.log("New folder created successfully!");
+            return Promise.resolve()
+        } catch (error) {
+            console.error('Error creating folder in Google Drive:', error);
+            return Promise.reject()
+        }
+    }
 
     async exportImages(interaction, destinationFolderId) {
         await interaction.deferReply();
@@ -163,47 +182,8 @@ class DiscordService {
         }
     }
       
-    async createGoogleDriveFolder(folderName, destinationFolderId) {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const newFolderId = await this.googleDriveService.createFolder(folderName, destinationFolderId);
-    
-                if (destinationFolderId === EVENT_FOLDER_ID) {
-                    await this.googleDriveService.copyFiles(TEMPLATE_FOLDER_ID, newFolderId);
-                }
-                console.log("New folder created successfully!");
-                resolve(newFolderId);
-            } catch (error) {
-                console.error('Error creating folder in Google Drive:', error);
-                reject(error);
-            }
-        });
-    }
 
-    printNewFolderCreated(newFolderId, destinationFolderId) {
-        const newFolderUrl = `https://drive.google.com/drive/folders/${newFolderId}`;
-        
-        const folderMessages = {
-            [EVENT_FOLDER_ID]: "📅 Un dossier dans la section Événement a été créé",
-            [FINANCE_FOLDER_ID]: "💰 Un dossier dans la section Trésorerie a été créé.",
-            [COMMUNICATION_FOLDER_ID]: "📷 Un dossier dans la section Communication a été créé"
-        };
-        
-        const messageTitle = folderMessages[destinationFolderId] || "Un dossier a été créé.";
 
-        const embed = new EmbedBuilder()
-            .setTitle(messageTitle)
-            .setColor("#FFB6C1");
-
-        const row = new ActionRowBuilder()
-            .addComponents(new ButtonBuilder()
-                .setLabel('Accéder au dossier')
-                .setStyle(ButtonStyle.Link)
-                .setURL(newFolderUrl)
-            );
-        
-        return { embeds: [embed], components: [row] };;
-    }
 
     async deletePreviousMessages(channel) {
         try {
@@ -258,6 +238,7 @@ class DiscordService {
             });
         }
     }
+
 }
 
 module.exports = DiscordService;

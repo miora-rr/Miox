@@ -7,7 +7,7 @@ const token = process.env.DISCORD_BOT_TOKEN;
 const commands = [
     {
         name: 'exporter_photos',
-        description: 'Exporte les images vers le dossier Communications dans Google Drive (max 100 images)',
+        description: 'Exporte les images vers le dossier Communications dans Google Drive (max 100 images)'
     },
     {
         name: 'ajouter_details_evenement',
@@ -15,8 +15,12 @@ const commands = [
     },
     {
         name: 'exporter_factures',
-        description: "Exporte les images vers le dossier Mandat de l'année en cours dans Google Drive (max 100 images)",
+        description: "Exporte les images vers le dossier Mandat de l'année en cours dans Google Drive (max 100 images)"
     },
+    {
+        name: 'creer_dossiers',
+        description: "Crée les dossiers de l'événement dans les sections Evénement et Trésorerie du le Drive"
+    }
 ];
 
 const rest = new REST({ version: '10' }).setToken(token);
