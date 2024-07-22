@@ -9,13 +9,12 @@ class DiscordMessagesService {
         const newFolderUrl = `https://drive.google.com/drive/folders/${newFolderId}`;
         
         const folderMessages = {
-            [process.env.EVENT_FOLDER_ID]: "📅 Un dossier dans la section Événement a été créé",
+            [process.env.EVENT_FOLDER_ID]: "📅 Un dossier dans la section Événement a été créé.",
             [process.env.FINANCE_FOLDER_ID]: "💰 Un dossier dans la section Trésorerie a été créé.",
-            [process.env.COMMUNICATION_FOLDER_ID]: "📷 Un dossier dans la section Communication a été créé"
+            [process.env.COMMUNICATION_FOLDER_ID]: "📷 Un dossier dans la section Communication a été créé."
         };
         
         const messageTitle = folderMessages[destinationFolderId] || "Un dossier a été créé.";
-        console.log(messageTitle);
 
         const embed = new EmbedBuilder()
             .setTitle(messageTitle)
