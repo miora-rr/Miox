@@ -1,0 +1,9 @@
+[
+    { "question": "Quel est le titre de l'événement?", "fieldName": "title" },
+    { "question": "Quelle est la date envisagée? (ex: 06-02-2025)", "fieldName": "date" },
+    { "question": "Heure de début et heure de fin pour les communications", "fieldName": "publicTime" },
+    { "question": "Dans une salle de classe ou dans une salle institutionnelle?", "fieldName": "salle" },
+    { "question": "Heure de début et heure de fin pour la réservation de la salle", "fieldName": "reservationTime" },
+    { "question": "Est-ce qu'il y aura de l'alcool?", "fieldName": "alcohol" },
+    { "question": "Est-ce nécessaire d'avoir des billets de stationnements. Si oui, combien?", "fieldName":"parkingTicketsNeeded"}
+]

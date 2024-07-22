@@ -28,7 +28,7 @@ class DiscordController {
             
             if (channel.type === TEXT_CHANNEL_DISCORD && channel.parentId === process.env.EVENT_CATEGORY_DISCORD_ID) {
                 await this.discordService.createDefaultThreads(channel);
-                await this.discordService.askEventDetails(channel);
+                await this.discordService.addEventDetails(channel);
                 
             }
         });
@@ -38,7 +38,7 @@ class DiscordController {
             
             if (channel.type === TEXT_CHANNEL_DISCORD && channel.parentId === process.env.EVENT_CATEGORY_DISCORD_ID) {
                 await this.discordService.createDefaultThreads(channel);
-                await this.discordService.askEventDetails(channel);
+                await this.discordService.addEventDetails(channel);
             }
         });
 
@@ -56,7 +56,7 @@ class DiscordController {
             
             if (commandName === 'exporter_factures') await this.discordService.exportImages(interaction, process.env.FINANCE_FOLDER_ID);
             
-            if (commandName === 'ajouter_details_evenement') await this.discordService.askEventDetails(interaction);
+            if (commandName === 'ajouter_details_evenement') await this.discordService.addEventDetails(interaction);
             
             if (commandName === 'creer_dossiers') {
                 await interaction.deferReply();

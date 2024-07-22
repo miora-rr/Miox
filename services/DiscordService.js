@@ -12,45 +12,31 @@ class DiscordService {
         this.messageService = new DiscordMessagesService();
     }
     
-    async askEventDetails(interaction) {
+    async addEventDetails(interaction) {
         await interaction.deferReply({ ephemeral: true });
         
-        let channel = interaction.channel;
-        const user = interaction.user;
+        const {channel, user} = interaction;
         const filter = response => response.author.id === user.id;
     
-        async function askQuestionDM(question) {
+        async function askQuestionToUserInDM(question) {
             const dmChannel = await user.createDM();
             try {
                 await dmChannel.send(question);
                 const response = await dmChannel.awaitMessages({filter, max: 1, time: 60000, errors: ['time'] });
                 return response.first().content;
             } catch (error) {
-                throw new Error('Timeout or error in user response');
+                console.error('Timeout or error in user response', error);
             }
         }
+        const questions = JSON.parse(fs.readFileSync('eventQuestions.json', 'utf8'));
     
         try {
-            const title = await askQuestionDM("Quel est le titre de l'événement?");
-            const date = await askQuestionDM('Quelle est la date envisagée? (ex: 06-02-2025)');
-            const publicTime = await askQuestionDM('Heure de début et heure de fin pour les communications');
-            const salle = await askQuestionDM('Dans une salle de classe ou dans une salle institutionnelle?');
-            const reservationTime = await askQuestionDM('Heure de début et heure de fin pour la réservation de la salle');
-            const alcohol = await askQuestionDM("Est-ce qu'il y aura de l'alcool?");
+            const responses = {};
+            for (const question of questions) {
+                responses[question.fieldName] = await askQuestionToUserInDM(question.question);
+            }
     
-            const embed = new EmbedBuilder()
-                .setColor(0x0099ff)
-                .setTitle(title)
-                .addFields(
-                    { name: 'Date', value: date },
-                    { name: 'Heure pour les communications', value: publicTime },
-                    { name: 'Salle', value: salle },
-                    { name: 'Heure pour la réservation de la salle', value: reservationTime },
-                    { name: 'Présence alcool', value: alcohol }
-                )
-                .setTimestamp()
-                .setFooter({ text: user.username });
-    
+            const embed = this.messageService.printEventDetails(responses, user.username);
             await channel.send({ embeds: [embed] });
             await interaction.editReply({ content: 'Les détails ont été ajoutés avec succès!', ephemeral: true });
         } catch (error) {
@@ -181,22 +167,6 @@ class DiscordService {
           console.error('Error fetching thread or channel:', error);
         }
     }
-      
-
-
-
-    async deletePreviousMessages(channel) {
-        try {
-            let fetchedMessages;
-            do {
-              fetchedMessages = await channel.messages.fetch({ limit: 100 });
-              await channel.bulkDeleteMessages(fetchedMessages);
-            } while (fetchedMessages.size !== 0);
-            console.log("All messages in the channel were deleted!");
-        } catch (error) {
-            console.error(`Error while deleting all messages`);
-        }
-    }
 
     async createDefaultThreads(channel) {
         const jsonData = JSON.parse(fs.readFileSync('threads.json', 'utf8'));
@@ -242,3 +212,4 @@ class DiscordService {
 }
 
 module.exports = DiscordService;
+
