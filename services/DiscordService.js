@@ -1,15 +1,14 @@
 const fs = require('fs');
-const path = require('path');
 const axios = require('axios');
-const PDFDocument = require('pdfkit');
 const GoogleDriveService = require('./GoogleDriveService');
 const DiscordMessagesService = require('./DiscordMessagesService');
-const { threadId } = require('worker_threads');
+const FileService = require('./FileService');
 
 class DiscordService {
     constructor() {
         this.googleDriveService = new GoogleDriveService();
         this.messageService = new DiscordMessagesService();
+        this.fileService = new FileService();
     }
     
     async addEventDetails(interaction) {
@@ -66,7 +65,7 @@ class DiscordService {
     async exportImages(interaction, destinationFolderId) {
         await interaction.deferReply();
         
-        this.createLocalDownloadFolder();
+        this.fileService.createLocalDownloadFolder();
         
         let { channel } = interaction;
         
@@ -83,7 +82,7 @@ class DiscordService {
                         const response = await axios.get(attachment.url, { responseType: 'stream' });
                         
                         // Parse the URL and extract the pathname without query parameters
-                        const filePath = await this.downloadImageLocaly(attachment, response);
+                        const filePath = await this.fileService.downloadImageLocaly(attachment, response);
 
                         if (destinationFolderId == COMMUNICATION_FOLDER_ID) await this.googleDriveService.uploadImageToDrive(attachment, filePath, newFolderId, fs);
                         else if (destinationFolderId == FINANCE_FOLDER_ID) imagePaths.push(filePath);
@@ -92,71 +91,16 @@ class DiscordService {
             }
 
             if (destinationFolderId == FINANCE_FOLDER_ID) {
-                const pdfPath = await this.createPDFLocaly(imagePaths);
+                const pdfPath = await this.fileService.createPDFLocaly(imagePaths);
                 await this.googleDriveService.uploadPDFToDrive(pdfPath, parentChannelName, newFolderId, fs);
             }
-            this.cleanUpDownloadsFolder();
+            this.fileService.cleanUpDownloadsFolder();
             
             const folderMessage = this.printNewFolderCreated(newFolderId, destinationFolderId);
             await interaction.editReply(folderMessage);
         } else {
             await interaction.editReply({ content: '🛑 Cette commande doit être appelée dans un thread.', ephemeral: true });
         }
-    }
-
-    async downloadImageLocaly(attachment, response) {
-        const parsedUrl = new URL(attachment.url);
-        const filename = path.basename(parsedUrl.pathname);
-
-        const filePath = path.join(__dirname, 'downloads', filename);
-        const writer = fs.createWriteStream(filePath);
-
-        response.data.pipe(writer);
-        await new Promise((resolve, reject) => {
-            writer.on('finish', resolve);
-            writer.on('error', (error) => {
-                console.error('Failed to write file:', error);
-                reject(error);
-            });
-        });
-        
-        return filePath;
-    }
-
-    cleanUpDownloadsFolder() {
-        const downloadDir = path.join(__dirname, 'downloads');
-        fs.rmSync(downloadDir, { recursive: true, force: true });
-    }
-    
-    async createPDFLocaly(imagePaths) {
-        const doc = new PDFDocument();
-        const pdfPath = path.join(__dirname, 'downloads', 'tmp_receipts.pdf');
-        const pdfStream = fs.createWriteStream(pdfPath);
-    
-        return new Promise((resolve, reject) => {
-            doc.pipe(pdfStream);
-    
-            imagePaths.forEach((imagePath, index) => {
-                if (index !== 0) doc.addPage();
-                doc.image(imagePath, {
-                    fit: [500, 700],
-                    align: 'center',
-                    valign: 'center',
-                });
-            });
-    
-            doc.end();
-    
-            pdfStream.on('finish', () => {
-                console.log(`PDF created at ${pdfPath}`);
-                resolve(pdfPath);
-            });
-    
-            pdfStream.on('error', (err) => {
-                console.error('Error creating PDF:', err);
-                reject(err);
-            });
-        });
     }
 
     async findThreadChannelName(thread) {
@@ -197,18 +141,6 @@ class DiscordService {
           
         await channel.send({ embeds: [embed] });
     }
-    
-    async createLocalDownloadFolder() {
-        const dirPath = path.join(__dirname, 'downloads');
-    
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdir(dirPath, { recursive: true }, (error) => {
-                if (error) console.error('Failed to create directory:', error);
-                else console.log('A directory called downloads was created successfully');
-            });
-        }
-    }
-
 }
 
 module.exports = DiscordService;
