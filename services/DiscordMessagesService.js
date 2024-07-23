@@ -46,6 +46,15 @@ class DiscordMessagesService {
             .setFooter({ text: userName });
     }
     
+    async printThreadSuccess(threadLinks, channel) {
+        const embed = new EmbedBuilder()
+            .setColor(0x0099ff)
+            .setTitle("Voici les threads (automatique):")
+            .setDescription(threadLinks)
+            .setTimestamp();
+
+        await channel.send({ embeds: [embed] });
+    }
 }
 
 

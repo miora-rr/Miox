@@ -18,9 +18,14 @@ const commands = [
         description: "Exporte les images vers le dossier Mandat de l'année en cours dans Google Drive (max 100 images)"
     },
     {
+        name: 'ajouter_threads_defaut',
+        description: "Ajoute les threads par défaut (ex:bénévoles, budget, communications, etc.)"
+    },
+    {
         name: 'creer_dossiers',
         description: "Crée les dossiers de l'événement dans les sections Evénement et Trésorerie du le Drive"
-    }
+    },
+
 ];
 
 const rest = new REST({ version: '10' }).setToken(token);

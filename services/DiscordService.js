@@ -113,11 +113,11 @@ class DiscordService {
     }
 
     async createDefaultThreads(channel) {
-        const jsonData = JSON.parse(fs.readFileSync('threads.json', 'utf8'));
+        const threadsFile = JSON.parse(fs.readFileSync('threads.json', 'utf8'));
         let threadLinks = '';
     
-        for (const threadData of jsonData.threads) {
-            try {
+        try {
+            for (const threadData of threadsFile.threads) {
                 const threadName = threadData.name; 
                 const thread = await channel.threads.create({
                     "name": threadName,
@@ -127,20 +127,13 @@ class DiscordService {
                 await thread.send(threadData.message);
                 threadLinks += `[${threadName}](${thread.url})\n`;
                 
-                console.log(`Thread created with name: ${thread.name}`);
-            } catch (error) {
-                console.error(`Failed to create thread: ${error}`);
+                console.log(`Thread created with name: ${thread.name}`);                       
             }
+            this.messageService.printThreadSuccess(threadLinks, channel)
+        } catch (error) {
+            console.error(`Failed to create thread: ${error}`);
         }
-        
-        const embed = new EmbedBuilder()
-                .setColor(0x0099ff)
-                .setTitle("Voici les threads (automatique):")
-                .setDescription(threadLinks)
-                .setTimestamp()
-          
-        await channel.send({ embeds: [embed] });
-    }
+    }    
 }
 
 module.exports = DiscordService;

@@ -23,25 +23,6 @@ class DiscordController {
             console.log(`Logged in as ${this.client.user.tag}!`);
         });
 
-        this.client.on('channelCreate', async channel => {
-            const TEXT_CHANNEL_DISCORD = 0;
-            
-            if (channel.type === TEXT_CHANNEL_DISCORD && channel.parentId === process.env.EVENT_CATEGORY_DISCORD_ID) {
-                await this.discordService.createDefaultThreads(channel);
-                await this.discordService.addEventDetails(channel);
-                
-            }
-        });
-
-        this.client.on('channelCreate', async channel => {
-            const TEXT_CHANNEL_DISCORD = 0;
-            
-            if (channel.type === TEXT_CHANNEL_DISCORD && channel.parentId === process.env.EVENT_CATEGORY_DISCORD_ID) {
-                await this.discordService.createDefaultThreads(channel);
-                await this.discordService.addEventDetails(channel);
-            }
-        });
-
         this.client.on('threadCreate', async thread => {
             await thread.join();
             console.log(`Joined new thread: ${thread.name}`);
@@ -57,6 +38,8 @@ class DiscordController {
             if (commandName === 'exporter_factures') await this.discordService.exportImages(interaction, process.env.FINANCE_FOLDER_ID);
             
             if (commandName === 'ajouter_details_evenement') await this.discordService.addEventDetails(interaction);
+            
+            if (commandName === 'ajouter_threads_defaut') await this.discordService.createDefaultThreads(interaction.channel);
             
             if (commandName === 'creer_dossiers') {
                 await interaction.deferReply();
