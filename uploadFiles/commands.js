@@ -1,4 +1,4 @@
-const { findThreadChannelName } = require('../utils');
+const { findThreadChannelName } = require('../utils/config');
 const axios = require('axios');
 const { UploadInvoicesStrategy } = require('./strategies');
 

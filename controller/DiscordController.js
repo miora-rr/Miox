@@ -5,14 +5,14 @@ const DiscordService = require("../services/DiscordService");
 const FileService = require("../services/FileService");
 const GoogleDriveService = require("../services/GoogleDriveService");
 const DiscordMessageService = require("../services/DiscordMessageService");
-const UploadStrategyFactory = require("../patterns/factories");
-const ExportImagesCommand = require("../patterns/commands");
+const UploadStrategyFactory = require("../uploadFiles/factories");
+const ExportImagesCommand = require("../uploadFiles/commands");
 const {
   COMMUNICATION_FOLDER_ID,
   FINANCE_FOLDER_ID,
   EVENT_FOLDER_ID,
   findThreadChannelName,
-} = require("../utils");
+} = require("../utils/config");
 
 class DiscordController {
   constructor() {
@@ -77,12 +77,16 @@ class DiscordController {
       }
 
       if (commandName === "ajouter_details_evenement")
-        await this.discordService.addEventDetails(interaction);
+        await this.discordService.planEvent(interaction);
 
       if (commandName === "ajouter_threads_defaut")
         await this.discordService.createDefaultThreads(interaction.channel);
 
-      if (commandName === "creer_dossiers") {
+      if (commandName === "planifier_event") {
+        await this.discordService.planEvent(interaction);
+      }
+
+      if (commandName === "creer_dossier_event") {
         await interaction.deferReply();
         const { channel } = interaction;
         Promise.all([
@@ -94,13 +98,13 @@ class DiscordController {
         ])
           .then(() => {
             interaction.editReply({
-              content: "La création des dossiers a été un succès",
+              content: "La création du dossier dans Événement a été un succès",
               ephemeral: true,
             });
           })
           .catch(() => {
             interaction.editReply({
-              content: "Erreur pendant la création des dossiers",
+              content: "Erreur pendant la création du dossier",
               ephemeral: true,
             });
           });

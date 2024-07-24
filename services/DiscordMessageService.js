@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { COMMUNICATION_FOLDER_ID, FINANCE_FOLDER_ID , EVENT_FOLDER_ID} = require('../utils');
+const { COMMUNICATION_FOLDER_ID, FINANCE_FOLDER_ID , EVENT_FOLDER_ID} = require('../utils/config');
 
 class DiscordMessageService {
     constructor(){
@@ -38,10 +38,10 @@ class DiscordMessageService {
             .addFields(
                 { name: 'Date', value: responses.date },
                 { name: 'Heure pour les communications', value: responses.publicTime },
-                { name: 'Salle', value: responses.salle },
                 { name: 'Heure pour la réservation de la salle', value: responses.reservationTime },
-                { name: 'Présence alcool', value: responses.alcohol },
-                { name: 'Ticket de stationnement', value: responses.parkingTicketsNeeded },
+                { name: 'Salle', value: responses.salle },
+                { name: 'Présence alcool', value: responses.alcohol ? "Oui" : "Non" },
+                { name: 'Ticket de stationnement', value: responses.parkingTicketsNeeded? "Oui" : "Non" },
             )
             .setTimestamp()
             .setFooter({ text: userName });
