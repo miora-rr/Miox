@@ -1,10 +1,11 @@
 const path = require('path');
 const PDFDocument = require('pdfkit');
+const fs = require('fs');
 
 class FileService {
     constructor (){}
 
-    async downloadImageLocaly(attachment, response) {
+    async downloadImageLocally(attachment, response) {
         const parsedUrl = new URL(attachment.url);
         const filename = path.basename(parsedUrl.pathname);
 
@@ -49,7 +50,8 @@ class FileService {
     
             pdfStream.on('finish', () => {
                 console.log(`PDF created at ${pdfPath}`);
-                resolve(pdfPath);
+                const readSream = fs.createReadStream(pdfPath);
+                resolve(readSream);
             });
     
             pdfStream.on('error', (err) => {

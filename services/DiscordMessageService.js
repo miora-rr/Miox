@@ -1,6 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { COMMUNICATION_FOLDER_ID, FINANCE_FOLDER_ID , EVENT_FOLDER_ID} = require('../utils');
 
-class DiscordMessagesService {
+class DiscordMessageService {
     constructor(){
 
     }
@@ -9,9 +10,9 @@ class DiscordMessagesService {
         const newFolderUrl = `https://drive.google.com/drive/folders/${newFolderId}`;
         
         const folderMessages = {
-            [process.env.EVENT_FOLDER_ID]: "📅 Un dossier dans la section Événement a été créé.",
-            [process.env.FINANCE_FOLDER_ID]: "💰 Un dossier dans la section Trésorerie a été créé.",
-            [process.env.COMMUNICATION_FOLDER_ID]: "📷 Un dossier dans la section Communication a été créé."
+            [EVENT_FOLDER_ID]: "📅 Un dossier dans la section Événement a été créé.",
+            [FINANCE_FOLDER_ID]: "💰 Un dossier dans la section Trésorerie a été créé.",
+            [COMMUNICATION_FOLDER_ID]: "📷 Un dossier dans la section Communication a été céé."
         };
         
         const messageTitle = folderMessages[destinationFolderId] || "Un dossier a été créé.";
@@ -58,4 +59,4 @@ class DiscordMessagesService {
 }
 
 
-module.exports = DiscordMessagesService;
+module.exports = DiscordMessageService;
