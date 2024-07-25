@@ -9,19 +9,21 @@ class FileService {
         const parsedUrl = new URL(attachment.url);
         const filename = path.basename(parsedUrl.pathname);
 
-        const filePath = path.join(__dirname, 'downloads', filename);
-        const writer = fs.createWriteStream(filePath);
-
-        response.data.pipe(writer);
-        await new Promise((resolve, reject) => {
-            writer.on('finish', resolve);
+        return new Promise ((resolve, reject) => {
+            const filePath = path.join(__dirname, 'downloads', filename);
+            const writer = fs.createWriteStream(filePath);
+    
+            response.data.pipe(writer);
+            
+            writer.on('finish', () => {
+                const readStream = fs.createReadStream(filePath);
+                resolve(readStream);
+            });
             writer.on('error', (error) => {
                 console.error('Failed to write file:', error);
                 reject(error);
             });
         });
-        
-        return filePath;
     }
 
     cleanUpDownloadsFolder() {
