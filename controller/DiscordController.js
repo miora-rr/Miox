@@ -11,7 +11,7 @@ const {
   COMMUNICATION_FOLDER_ID,
   FINANCE_FOLDER_ID,
   EVENT_FOLDER_ID,
-  findThreadChannelName,
+  roomPlanFileId,
 } = require("../utils/config");
 
 class DiscordController {
@@ -62,8 +62,8 @@ class DiscordController {
       ) {
         const destinationFolderId =
           commandName === "exporter_photos"
-            ? process.env.COMMUNICATION_FOLDER_ID
-            : process.env.FINANCE_FOLDER_ID;
+            ? COMMUNICATION_FOLDER_ID
+            : FINANCE_FOLDER_ID;
         const uploadStrategy =
           UploadStrategyFactory.getStrategy(destinationFolderId);
         const command = new ExportImagesCommand(
@@ -76,14 +76,38 @@ class DiscordController {
         await command.execute(destinationFolderId);
       }
 
-      if (commandName === "ajouter_details_evenement")
-        await this.discordService.planEvent(interaction);
-
       if (commandName === "ajouter_threads_defaut")
         await this.discordService.createDefaultThreads(interaction.channel);
 
       if (commandName === "planifier_event") {
-        await this.discordService.planEvent(interaction);
+        try {
+          this.discordService.planEvent(interaction);
+          const { channel } = interaction;
+          await this.googleDriveService
+            .createGoogleDriveFolder(channel.name, EVENT_FOLDER_ID, channel)
+            .then((folderId) => {
+              const key = interaction.options.getString("salle");
+              const file = {
+                id: roomPlanFileId[key],
+                name: interaction.options.getString("title"),
+              };
+              console.log(file);
+              this.googleDriveService.copyFiles(
+                process.env.TEMPLATE_FOLDER_ID,
+                folderId
+              );
+
+              // Copy only salle institutionnelle
+              if (
+                key !== roomPlanFileId.classroom &&
+                roomPlanFileId.outside_poly !== outside_poly
+              ) {
+                this.googleDriveService.copyFile(file, folderId);
+              }
+            });
+        } catch {
+          console.error("Error while creating files");
+        }
       }
 
       if (commandName === "creer_dossier_event") {
@@ -94,7 +118,7 @@ class DiscordController {
             channel.name,
             EVENT_FOLDER_ID,
             channel
-          )
+          ),
         ])
           .then(() => {
             interaction.editReply({

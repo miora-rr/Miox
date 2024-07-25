@@ -86,16 +86,13 @@ class GoogleDriveService {
     }
   }
 
+
   async createGoogleDriveFolder(folderName, destinationFolderId, channel) {
     try {
       const newFolderId = await this.createFolder(
         folderName,
         destinationFolderId
       );
-
-      if (destinationFolderId === process.env.EVENT_FOLDER_ID) {
-        await this.copyFiles(process.env.TEMPLATE_FOLDER_ID, newFolderId);
-      }
 
       const message = this.discordMessageService.printNewFolderCreated(
         newFolderId,
@@ -105,10 +102,25 @@ class GoogleDriveService {
       if (channel) channel.send(message);
 
       console.log("New folder created successfully!");
-      return Promise.resolve();
+      return Promise.resolve(newFolderId);
     } catch (error) {
       console.error("Error creating folder in Google Drive:", error);
       return Promise.reject();
+    }
+  }
+
+  async copyFile(file, destinationFolderId) {
+    try {
+      await this.drive.files.copy({
+        fileId: file.id,
+        requestBody: {
+          parents: [destinationFolderId],
+          name: file.name,
+        },
+        supportsAllDrives: true, // Necessary for Shared Drives
+      });
+    } catch (error) {
+      console.error("Error copying files:", error.message);
     }
   }
 
@@ -125,14 +137,7 @@ class GoogleDriveService {
       const files = res.data.files;
       if (files.length) {
         files.forEach(async (file) => {
-          await this.drive.files.copy({
-            fileId: file.id,
-            requestBody: {
-              parents: [destinationFolderId],
-              name: file.name,
-            },
-            supportsAllDrives: true, // Necessary for Shared Drives
-          });
+          this.copyFile(file, destinationFolderId);
         });
       } else {
         console.log("No files found.");
