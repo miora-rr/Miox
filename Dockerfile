@@ -16,4 +16,4 @@ COPY . .
 EXPOSE 3000
 
 # Define the command to run the app
-CMD ["node", "index.js"]
+CMD ["node", "controller/DiscordController.js"]
