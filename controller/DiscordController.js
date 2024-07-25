@@ -12,6 +12,8 @@ const {
   FINANCE_FOLDER_ID,
   EVENT_FOLDER_ID,
   roomPlanFileId,
+  ALCOHOL_COMMAND_ID,
+  roomOptions
 } = require("../utils/config");
 
 class DiscordController {
@@ -86,52 +88,38 @@ class DiscordController {
           await this.googleDriveService
             .createGoogleDriveFolder(channel.name, EVENT_FOLDER_ID, channel)
             .then((folderId) => {
-              const key = interaction.options.getString("salle");
-              const file = {
-                id: roomPlanFileId[key],
-                name: interaction.options.getString("title"),
-              };
-              console.log(file);
+              const roomKey = interaction.options.getString("salle");
+              const alcoholKey = interaction.options.getBoolean("alcohol");
+              const dateKey = interaction.options.getString("date");
+
+               // Copy only institutionnal rooms
+              if ( roomKey !== roomOptions.classroom && roomKey !== roomOptions.outside_poly) {
+                const file = {
+                  id: roomPlanFileId[roomKey],
+                  name: `Plan-${interaction.channel.name}`,
+                };
+                this.googleDriveService.copyFile(file, folderId);
+              }
+
+               // Copy template alcohol command
+              if (alcoholKey) {
+                const file = {
+                  id: ALCOHOL_COMMAND_ID,
+                  name: `Commande-Poly-Out-${dateKey}`,
+                };
+                this.googleDriveService.copyFile(file, folderId);
+              }
+             
+              // Copy declaration event et planning
               this.googleDriveService.copyFiles(
                 process.env.TEMPLATE_FOLDER_ID,
                 folderId
               );
-
-              // Copy only salle institutionnelle
-              if (
-                key !== roomPlanFileId.classroom &&
-                roomPlanFileId.outside_poly !== outside_poly
-              ) {
-                this.googleDriveService.copyFile(file, folderId);
-              }
+              
             });
-        } catch {
-          console.error("Error while creating files");
+        } catch (error) {
+          console.error(`Error while creating files: ${error}`);
         }
-      }
-
-      if (commandName === "creer_dossier_event") {
-        await interaction.deferReply();
-        const { channel } = interaction;
-        Promise.all([
-          this.googleDriveService.createGoogleDriveFolder(
-            channel.name,
-            EVENT_FOLDER_ID,
-            channel
-          ),
-        ])
-          .then(() => {
-            interaction.editReply({
-              content: "La création du dossier dans Événement a été un succès",
-              ephemeral: true,
-            });
-          })
-          .catch(() => {
-            interaction.editReply({
-              content: "Erreur pendant la création du dossier",
-              ephemeral: true,
-            });
-          });
       }
     });
   }

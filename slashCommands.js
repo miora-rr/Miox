@@ -54,10 +54,6 @@ const commands = [
         .setDescription('Exporte les images vers le dossier Communications dans Google Drive (max 100 images)')
         .toJSON(),
         new SlashCommandBuilder()
-            .setName('ajouter_details_evenement')
-            .setDescription("Affiche un message avec le titre, la date, le lieu, la description et s'il y aura de l'alcool")
-            .toJSON(),
-        new SlashCommandBuilder()
             .setName('exporter_factures')
             .setDescription("Exporte les images vers le dossier Mandat de l'année en cours dans Google Drive (max 100 images)")
             .toJSON(),
