@@ -6,8 +6,8 @@ class UploadStrategy {
 
 class UploadImagesStrategy extends UploadStrategy {
     async upload(attachment, response, googleDriveService, fileService, newFolderId) {
-        const fileStream = await fileService.downloadImageLocally(attachment, response);
-        await googleDriveService.uploadImageToDrive(attachment, fileStream, newFolderId);
+        const filePath = await fileService.downloadImageLocally(attachment, response);
+        await googleDriveService.uploadImageToDrive(attachment, fileService.toReadStream(filePath), newFolderId);
     }
 }
 

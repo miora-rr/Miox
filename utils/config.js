@@ -9,7 +9,7 @@ const roomOptions = {
     amphi: 'Amphithéâtre Bernard-Lamarre',
     vitrine: 'Vitrine étudiante (C-200)',
     cafeteria: 'Cafétéria',
-    rotonde: 'Rotonde palier supérieur',
+    rotonde: 'Rotondes',
     lassonde_six: '6e Lassonde (mur bleu)',
     lassonde_1_etage: 'Hall Lassonde',
     atrium: 'Atrium',

@@ -16,14 +16,17 @@ class FileService {
             response.data.pipe(writer);
             
             writer.on('finish', () => {
-                const readStream = fs.createReadStream(filePath);
-                resolve(readStream);
+                resolve(filePath);
             });
             writer.on('error', (error) => {
                 console.error('Failed to write file:', error);
                 reject(error);
             });
         });
+    }
+
+    toReadStream(filePath) {
+        return fs.createReadStream(filePath);
     }
 
     cleanUpDownloadsFolder() {
